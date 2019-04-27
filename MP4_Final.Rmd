@@ -20,7 +20,101 @@ db <- dbConnect(MySQL(),
 knitr::opts_chunk$set(connection = db, max.print = 20)
 ```
 
-```{sql connection=}
 
+```{sql, connection=db, output.var="spacey"}
+SELECT 
+SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
+t.title, n.name, ci.role_id, t.production_year
+FROM cast_info AS ci
+JOIN name AS n ON n.id = ci.person_id
+JOIN title AS t ON ci.movie_id = t.id
+JOIN movie_info AS mi ON t.id = mi.movie_id
+WHERE info_type_id = 107
+AND mi.info LIKE '%(usa)%'
+AND ci.person_id = 2263070
+AND episode_of_id IS NULL
+GROUP BY t.title
+ORDER BY production_year;
+```
+
+```{sql connection=db, output.var="singer"}
+SELECT 
+SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
+t.title, n.name, ci.role_id, t.production_year
+FROM cast_info AS ci
+JOIN name AS n ON n.id = ci.person_id
+JOIN title AS t ON ci.movie_id = t.id
+JOIN movie_info AS mi ON t.id = mi.movie_id
+WHERE info_type_id = 107
+AND mi.info LIKE '%(usa)%'
+AND ci.person_id = 2217029
+AND episode_of_id IS NULL
+GROUP BY t.title
+ORDER BY production_year;
+```
+
+```{sql connection=db, output.var="weinstein"}
+SELECT 
+SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
+t.title, n.name, ci.role_id, t.production_year
+FROM cast_info AS ci
+JOIN name AS n ON n.id = ci.person_id
+JOIN title AS t ON ci.movie_id = t.id
+JOIN movie_info AS mi ON t.id = mi.movie_id
+WHERE info_type_id = 107
+AND mi.info LIKE '%(usa)%'
+AND ci.person_id = 2551650
+AND episode_of_id IS NULL
+GROUP BY t.title
+ORDER BY production_year;
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+ggplot(singer, aes(x = production_year, y = gross)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth() +
+  geom_vline(xintercept = 2014) +
+  geom_vline(xintercept = 1997)
+```
+
+```{r}
+ggplot(weinstein, aes(x = production_year, y = gross)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth() +
+  geom_vline(xintercept = 1998)
+  geom_vline(xintercept = 2017)
+```
+
+```{sql connection=db, output.var = "allen"}
+SELECT 
+SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
+t.title, n.name, ci.role_id, t.production_year
+FROM cast_info AS ci
+JOIN name AS n ON n.id = ci.person_id
+JOIN title AS t ON ci.movie_id = t.id
+JOIN movie_info AS mi ON t.id = mi.movie_id
+WHERE info_type_id = 107
+AND mi.info LIKE '%(usa)%'
+AND ci.person_id = 48348
+AND episode_of_id IS NULL
+GROUP BY t.title
+ORDER BY production_year;
+```
+
+```{r}
+ggplot(allen, aes(x = production_year, y = gross)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth() +
+  geom_vline(xintercept = 1992) +
+  geom_vline(xintercept = 2017)
 ```
 
