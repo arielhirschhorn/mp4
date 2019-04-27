@@ -21,6 +21,27 @@ knitr::opts_chunk$set(connection = db, max.print = 20)
 ```
 
 ```{sql connection=}
+SELECT * 
+FROM name 
+WHERE name LIKE '%Spacey, Kevin%';
+
+```
+
+```{sql connection=}
+SELECT t.title, n.name, ci.role_id, t.production_year
+FROM cast_info AS ci
+JOIN name AS n ON n.id = ci.person_id
+JOIN title AS t ON ci.movie_id = t.id
+WHERE ci.person_id = 2263070
+AND episode_of_id IS NULL
+ORDER BY production_year
+
+USE imdb;
+SHOW TABLES;
+```
+
+
+
 
 ```
 
