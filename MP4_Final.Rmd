@@ -1,16 +1,21 @@
 ---
-title: "MP4"
-author: "Ariel Hirschhorn"
+title: "#MoneyToo: Do Sexual Assault Scandals Impact A Film's Gross?"
+author: "Ariel Hirschhorn and Roshni Patnayakuni"
 date: "4/27/2019"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, message = FALSE}
 library(tidyverse)
+library(devtools)
+library(wordcountaddin)
 library(RMySQL)
 db <- dbConnect(MySQL(), 
                 host = "scidb.smith.edu", 
@@ -20,31 +25,25 @@ db <- dbConnect(MySQL(),
 knitr::opts_chunk$set(connection = db, max.print = 20)
 ```
 
-<<<<<<< HEAD
-=======
-```{sql connection=}
-SELECT * 
-FROM name 
-WHERE name LIKE '%Spacey, Kevin%';
+Before the Me Too movement, most of the general public only knew Harvey Weinstein as a name behind Miramax or the Weinstein Companies, logos that might flash briefly before a blockbuster. After October 2017, when a <a href="https://www.nytimes.com/2017/10/05/us/harvey-weinstein-harassment-allegations.html">New York Times article </a> reported over a dozen women's accusations of sexual assault, his name stood for a culture of sexual assault and coverup by the rich and powerful. Now, it is impossible to think about the film industry without thinking about Harvey Weinstein, and more importantly, thinking about Me Too. Originally, the movement was founded by activist Tarana Burke, primarily for assault survivors of color. As the movement gained traction, #MeToo has been permeating all social circles and industries. But how much has #MeToo affected  But are people still paying for films starring or produced by those those accused of sexual assault? To answer this question, we looked at a number of different actors, directors, and producers with sexual assault allegations, including Harvey Weinstein, Bryan Singer, Woody Allen, and Kevin Spacey. 
 
-```
 
-```{sql connection=}
-SELECT t.title, n.name, ci.role_id, t.production_year
+```{sql connection=db, output.var="singer"}
+SELECT 
+SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross, -- turned gross column into a string
+t.title, n.name, ci.role_id, t.production_year -- 'const' join type
 FROM cast_info AS ci
 JOIN name AS n ON n.id = ci.person_id
-JOIN title AS t ON ci.movie_id = t.id
-WHERE ci.person_id = 2263070
-AND episode_of_id IS NULL
-ORDER BY production_year
-
-USE imdb;
-SHOW TABLES;
+JOIN title AS t ON ci.movie_id = t.id -- 'eq_ref' join type
+JOIN movie_info AS mi ON t.id = mi.movie_id 
+WHERE info_type_id = 107 -- this was much slower, but moving up the WHERE clause allowed us to use a 'ref' join type 
+AND mi.info LIKE '%(usa)%'-- we only decided to use data from the US because only some films listed the international gross
+AND ci.person_id = 2217029
+AND episode_of_id IS NULL -- We removed TV appearances to focus our analysis, because not all TV episodes listed a gross
+GROUP BY t.title
+ORDER BY production_year;
 ```
-
-
-
->>>>>>> daf2db21ef5f5d9c905397c6f7a350c64f164271
+The first person we chose was director Bryan Singer. Bryan Singer has directed many high-grossing films, including the X-Men franchise and, most recently, the Oscar-winning film Bohemian Rhapsody (although the IMDB dataset does not include Bohemian Rhapsody because it was recently released). However, Bryan Singer has faced lawsuits and allegations for sexual assault, including a lawsuit in <a href="https://www.chicagotribune.com/entertainment/ct-xpm-2014-04-18-sns-201404181737reedbusivarietyn1201159632-20140418-story.html">1997</a> two <a href="https://www.bbc.com/news/entertainment-arts-42278174,">in</a>, <a href="https://www.nytimes.com/2014/04/18/business/media/in-lawsuit-director-of-new-x-men-film-is-accused-of-sexual-assault.html">2014</a>, one in <a href="https://www.bbc.com/news/entertainment-arts-42278174">2017</a>, all of which recently came to light again in <a href="<a href="https://www.bbc.com/news/entertainment-arts-42278174">2019</a>". Although Singer's credit has been removed by certain film associations, including BAFTA, Singer largely retains credit for Bohemian Rhapsody, and has been greenlighted for several upcoming projects.  
 
 ```{sql, connection=db, output.var="spacey"}
 SELECT 
@@ -55,14 +54,18 @@ JOIN name AS n ON n.id = ci.person_id
 JOIN title AS t ON ci.movie_id = t.id
 JOIN movie_info AS mi ON t.id = mi.movie_id
 WHERE info_type_id = 107
-AND mi.info LIKE '%(usa)%'
+AND mi.info LIKE '%(usa)%'  
 AND ci.person_id = 2263070
 AND episode_of_id IS NULL
 GROUP BY t.title
 ORDER BY production_year;
 ```
+Next, we chose Kevin Spacey, an actor in the American adaptation of House of Cards. 
 
-```{sql connection=db, output.var="singer"}
+
+
+
+```{sql connection=db, output.var = "allen"}
 SELECT 
 SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
 t.title, n.name, ci.role_id, t.production_year
@@ -72,7 +75,7 @@ JOIN title AS t ON ci.movie_id = t.id
 JOIN movie_info AS mi ON t.id = mi.movie_id
 WHERE info_type_id = 107
 AND mi.info LIKE '%(usa)%'
-AND ci.person_id = 2217029
+AND ci.person_id = 48348
 AND episode_of_id IS NULL
 GROUP BY t.title
 ORDER BY production_year;
@@ -95,51 +98,46 @@ ORDER BY production_year;
 ```
 
 
-```{r}
-
-```
-
-
-```{r}
+```{r, message=FALSE}
 ggplot(singer, aes(x = production_year, y = gross)) +
   geom_point() +
   scale_y_log10() +
   geom_smooth() +
   geom_vline(xintercept = 2014) +
-  geom_vline(xintercept = 1997)
+  geom_vline(xintercept = 1997) +
+  geom_vline(xintercept = 2017) +
+  ggtitle("Bryan Singer Grosses of Films")
 ```
 
-```{r}
+```{r, message=FALSE}
 ggplot(weinstein, aes(x = production_year, y = gross)) +
   geom_point() +
   scale_y_log10() +
   geom_smooth() +
-  geom_vline(xintercept = 1998)
-  geom_vline(xintercept = 2017)
+  geom_vline(xintercept = 1998) +
+  geom_vline(xintercept = 2017) +
+  ggtitle("Harvey Weinstein Grosses of Films")
+
 ```
 
-```{sql connection=db, output.var = "allen"}
-SELECT 
-SUM(1.0 * REPLACE(SUBSTRING(mi.info, 2, LOCATE('(', mi.info) - 3), ',', '')) AS gross,
-t.title, n.name, ci.role_id, t.production_year
-FROM cast_info AS ci
-JOIN name AS n ON n.id = ci.person_id
-JOIN title AS t ON ci.movie_id = t.id
-JOIN movie_info AS mi ON t.id = mi.movie_id
-WHERE info_type_id = 107
-AND mi.info LIKE '%(usa)%'
-AND ci.person_id = 48348
-AND episode_of_id IS NULL
-GROUP BY t.title
-ORDER BY production_year;
-```
 
-```{r}
+```{r, message=FALSE}
 ggplot(allen, aes(x = production_year, y = gross)) +
   geom_point() +
   scale_y_log10() +
   geom_smooth() +
   geom_vline(xintercept = 1992) +
-  geom_vline(xintercept = 2017)
+  geom_vline(xintercept = 2017) +
+  ggtitle("Woody Allen Grosses of Films")
 ```
+
+Something incredibly important to note that we missed in our analysis due to time constraint: We did not adjust for inflation. We may be masking a downward trend, especially with Woody Allen's data, as a lot of his successful films are on the older side. Had we more time, we would've adjusted our data for inflation and seen if there was truly a downward or upward trend. Also, it is important to remember that correlation is not causation: just because there was a sexual assault scandal of a particular director or actor does not does not mean that that caused the movie to make less money. It may be due to a film's quality, reviews, and hype in the press. Still, it is important that Hollywood hold directors, actors, and producers accountable. 
+
+Link to github repository <a href="https://github.com/arielhirschhorn/mp4">here</a>
+
+Word count:
+```{r, message=FALSE}
+wordcountaddin::word_count("MP4_Final.Rmd")
+```
+
 
