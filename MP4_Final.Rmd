@@ -1,5 +1,5 @@
 ---
-title: "#MoneyToo: Do Sexual Assault Scandals Impact A Film's Gross?"
+title: "#MoneyToo: Sexual Assault Scandals and Film Gross"
 author: "Ariel Hirschhorn and Roshni Patnayakuni"
 date: "4/27/2019"
 output: 
