@@ -43,7 +43,9 @@ AND episode_of_id IS NULL -- We removed TV appearances to focus our analysis, be
 GROUP BY t.title
 ORDER BY production_year;
 ```
-The first person we chose was director Bryan Singer. Bryan Singer has directed many high-grossing films, including the X-Men franchise and, most recently, the Oscar-winning film Bohemian Rhapsody (although the IMDB dataset does not include Bohemian Rhapsody because it was recently released). However, Bryan Singer has faced lawsuits and allegations for sexual assault, including a lawsuit in <a href="https://www.chicagotribune.com/entertainment/ct-xpm-2014-04-18-sns-201404181737reedbusivarietyn1201159632-20140418-story.html">1997</a> two <a href="https://www.bbc.com/news/entertainment-arts-42278174,">in</a>, <a href="https://www.nytimes.com/2014/04/18/business/media/in-lawsuit-director-of-new-x-men-film-is-accused-of-sexual-assault.html">2014</a>, one in <a href="https://www.bbc.com/news/entertainment-arts-42278174">2017</a>, all of which recently came to light again in <a href="<a href="https://www.bbc.com/news/entertainment-arts-42278174">2019</a>". Although Singer's credit has been removed by certain film associations, including BAFTA, Singer largely retains credit for Bohemian Rhapsody, and has been greenlighted for several upcoming projects.  
+The first person we chose was director Bryan Singer. Bryan Singer has directed many high-grossing films, including the X-Men franchise and, most recently, the Oscar-winning 2018 film Bohemian Rhapsody (although the IMDB dataset does not include Bohemian Rhapsody because it was recently released). However, Bryan Singer has faced lawsuits and allegations for sexual assault, including a lawsuit in <a href="https://www.chicagotribune.com/entertainment/ct-xpm-2014-04-18-sns-201404181737reedbusivarietyn1201159632-20140418-story.html">1997</a> two <a href="https://www.bbc.com/news/entertainment-arts-42278174,">in</a>, <a href="https://www.nytimes.com/2014/04/18/business/media/in-lawsuit-director-of-new-x-men-film-is-accused-of-sexual-assault.html">2014</a>, one in <a href="https://www.bbc.com/news/entertainment-arts-42278174">2017</a>, all of which recently came to light again in <a href="<a href="https://www.bbc.com/news/entertainment-arts-42278174">2019</a>". Although Singer's credit has been removed by certain film associations, including BAFTA, Singer largely retains credit for Bohemian Rhapsody, and has been greenlighted for several upcoming projects.  
+
+Listed is a complete index 
 
 ```{sql, connection=db, output.var="spacey"}
 SELECT 
@@ -60,7 +62,8 @@ AND episode_of_id IS NULL
 GROUP BY t.title
 ORDER BY production_year;
 ```
-Next, we chose Kevin Spacey, an actor in the American adaptation of House of Cards. 
+
+Next, we chose Kevin Spacey, an actor garnering critical acclaim for the films The Usual Suspects (1995) American Beauty (1999), as well as numerous other stage and TV roles. He has been pulled from a number of films and TV shows, most famously the American adaptation of House of Cards. Sexual assault scandals came out against him in 2001, although his name was <a href="https://www.advocate.com/media/2017/10/31/why-did-advocate-redact-kevin-spaceys-name-2001">redacted</a>. In 2017, in response to Anthony Rapp coming forward <a href="https://money.cnn.com/2017/11/02/media/house-of-cards-kevin-spacey-harassment/index.html">fifteen others</a> also alleged sexual assault against him. 
 
 
 
@@ -106,8 +109,25 @@ ggplot(singer, aes(x = production_year, y = gross)) +
   geom_vline(xintercept = 2014) +
   geom_vline(xintercept = 1997) +
   geom_vline(xintercept = 2017) +
+  xlab("Production Year") +
+  ylab("Total gross, log scale") +
   ggtitle("Bryan Singer Grosses of Films")
 ```
+
+
+```{r}
+ggplot(spacey, aes(x = production_year, y = gross)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth() +
+  geom_vline(xintercept = 2001) +
+  geom_vline(xintercept = 2017) +
+  xlab("Production Year") +
+  ylab("Total gross, log scale") +
+  ggtitle("Kevin Spacet Grosses of Films")
+```
+
+
 
 ```{r, message=FALSE}
 ggplot(weinstein, aes(x = production_year, y = gross)) +
@@ -116,6 +136,8 @@ ggplot(weinstein, aes(x = production_year, y = gross)) +
   geom_smooth() +
   geom_vline(xintercept = 1998) +
   geom_vline(xintercept = 2017) +
+  xlab("Production Year") +
+  ylab("Total gross, log scale") +
   ggtitle("Harvey Weinstein Grosses of Films")
 
 ```
@@ -128,10 +150,15 @@ ggplot(allen, aes(x = production_year, y = gross)) +
   geom_smooth() +
   geom_vline(xintercept = 1992) +
   geom_vline(xintercept = 2017) +
+  xlab("Production Year") +
+  ylab("Total gross, log scale") +
   ggtitle("Woody Allen Grosses of Films")
 ```
 
-Something incredibly important to note that we missed in our analysis due to time constraint: We did not adjust for inflation. We may be masking a downward trend, especially with Woody Allen's data, as a lot of his successful films are on the older side. Had we more time, we would've adjusted our data for inflation and seen if there was truly a downward or upward trend. Also, it is important to remember that correlation is not causation: just because there was a sexual assault scandal of a particular director or actor does not does not mean that that caused the movie to make less money. It may be due to a film's quality, reviews, and hype in the press. Still, it is important that Hollywood hold directors, actors, and producers accountable. 
+Something incredibly important to note that we missed in our analysis due to time constraint: We did not adjust for inflation. We may be masking a downward trend, especially with Woody Allen's data, as a lot of his successful films are on the older side. Had we more time, we would've adjusted our data for inflation and seen if there was truly a downward or upward trend. 
+
+
+Also, it is important to remember that correlation is not causation: just because there was a sexual assault scandal of a particular director or actor does not does not mean that that caused the movie to make less money. It may be due to a film's quality, reviews, and advertising, as well as a number of different factors. Still, it is important that Hollywood hold directors, actors, and producers accountable, regardless of how much money their particular films make.  
 
 Link to github repository <a href="https://github.com/arielhirschhorn/mp4">here</a>
 
