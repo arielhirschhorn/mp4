@@ -181,7 +181,7 @@ ggplot(weinstein, aes(x = production_year, y = gross)) +
 Something incredibly important to note that we missed in our analysis due to time constraint: We did not adjust for inflation. We may be masking a downward trend, especially with Woody Allen's data, as a lot of his successful films are on the older side. Had we more time, we would've adjusted our data for inflation and seen if there was truly a downward or upward trend. 
 
 
-Also, it is important to remember that correlation is not causation: just because there was a sexual assault scandal of a particular director or actor does not does not mean that that caused the movie to make less money. It may be due to a film's quality, reviews, and advertising, as well as a number of different factors. Still, it is important that Hollywood hold directors, actors, and producers accountable, regardless of how much money their particular films make.  
+Also, it is important to remember that correlation is not causation: just because there was a sexual assault scandal of a particular director or actor does not mean that that caused the movie to make less money. It may be due to a film's quality, reviews, and advertising, as well as a number of different factors. Still, it is important that Hollywood hold directors, actors, and producers accountable, regardless of how much money their particular films make.  
 
 Link to github repository <a href="https://github.com/arielhirschhorn/mp4">here</a>
 
